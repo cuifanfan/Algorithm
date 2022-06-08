@@ -58,7 +58,7 @@ function merge(arr, left, middle, right) {
 // 时间复杂度为O(nlogn)，空间复杂度为O(n+logn),即O(n) //数组O(n),压栈操作O(logn)
 function merge_sort(arr, left, right) {
   if (left >= right) return
-  let middle = Math.floor(left + ((right - left) >> 1))
+  const middle = Math.floor(left + ((right - left) >> 1))
 
   merge_sort(arr, left, middle)
   merge_sort(arr, middle + 1, right)
