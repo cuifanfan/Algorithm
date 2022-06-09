@@ -18,7 +18,7 @@ function getPivot(arr, left, right) {
   return arr[right - 1]
 }
 
-function quick_sort(arr, left, right) {
+funct ion quick_sort(arr, left, right) {
   if (left >= right) return
 
   // 获取枢纽，同时给left, middle, right排好序(选取中位数作为枢纽，尽量保证枢纽选取在中间，时间复杂度接近O(nlogn),更加稳定)
