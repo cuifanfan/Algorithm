@@ -74,15 +74,17 @@ function testMethod(arr) {
 function rightMethod(arr) {
   arr.sort((a, b) => a - b);
 }
+
 //随机数组生成器，size为最大长度，value为最大值
 function generateRandomArray(size, value) {
   //生成长度随机的数组
   let arr = new Array(Math.floor((size + 1) * Math.random()));
   for (let i = 0; i < arr.length; i++) {
-    arr[i] = Math.floor((value + 1) * Math.random());
+    arr[i] = Math.floor((value + 1) * ((Math.random() - 0.5) * 2));
   }
   return arr;
 }
+
 //拷贝数组方法
 function copyArray(arr) {
   if (arr == null) {
@@ -90,6 +92,7 @@ function copyArray(arr) {
   }
   return [].concat(arr);
 }
+
 //比对方法
 function isEqual(arr1, arr2) {
   if ((arr1 == null && arr2 != null) || (arr1 != null && arr2 == null)) {
@@ -108,6 +111,7 @@ function isEqual(arr1, arr2) {
   }
   return true;
 }
+
 //测试
 function Test() {
   let testTimes = 5000;
@@ -128,4 +132,5 @@ function Test() {
   }
   console.log(succeed ? 'nice' : 'Fucking fucked');
 }
+
 Test();

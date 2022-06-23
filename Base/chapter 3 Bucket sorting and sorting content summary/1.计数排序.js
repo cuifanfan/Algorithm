@@ -1,13 +1,43 @@
-// https://blog.csdn.net/weixin_38171030/article/details/99791390
+// 计数排序(有限条件下：比如员工的年龄等，小区间)
 
-//要测试的方法
-function insertSort(arr) {
-  for (let i = 1; i < arr.length; i++) {
-    for (let j = i - 1; j >= 0 && arr[j] > arr[j + 1]; j--) {
-      [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+function count_sort(arr) {
+  if (arr === null || arr.length < 2) return
+
+  let min = arr[0]
+  let max = arr[0]
+  for (let i = 0; i < arr.length; i++) {
+    max = Math.max(arr[i], max)
+    min = Math.min(arr[i], min)
+  }
+  // 所有数字加上max都会大于等于0
+  max = Math.max(Math.abs(max), Math.abs(min))
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] += max
+  }
+
+
+  const help = new Array(2 * max + 1).fill(0)
+  for (let i = 0; i < arr.length; i++) {
+    help[arr[i]]++
+  }
+  let k = 0
+  for (let i = 0; i < help.length; i++) {
+    for (let j = 0; j < help[i]; j++) {
+      arr[k++] = i
     }
   }
+
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] -= max
+  }
 }
+
+
+// 测试的方法
+function testMethod(arr) {
+  count_sort(arr)
+}
+
 //正确的方法
 function rightMethod(arr) {
   arr.sort((a, b) => a - b);
@@ -56,7 +86,7 @@ function Test() {
     let arr1 = generateRandomArray(size, value);
     let arr2 = copyArray(arr1);
     let arr3 = copyArray(arr1);
-    insertSort(arr1);
+    testMethod(arr1);
     rightMethod(arr2);
     if (!isEqual(arr1, arr2)) {
       succeed = false;

@@ -59,5 +59,5 @@ function sortedArrDistanceLessK(arr, k) {
 }
 
 let arr = [6, 8, 3, 10, 11, 1, 7, 2, 13, 4, 5, 12, 9]
-sortedArrDistanceLessK(arr, )
+sortedArrDistanceLessK(arr, 7)
 console.log(arr);
