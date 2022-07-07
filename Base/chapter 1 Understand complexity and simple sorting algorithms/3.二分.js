@@ -19,10 +19,11 @@
 // // console.log(arr.dichotomia(5));
 
 // let arr1 = [1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5];
-
+let arr1 = [1, 1, 2, 3, 7, 7, 7, 9, 9, 10]
 // // 找最左侧大于等于target的值
 // // 二分之后在确定位置坐标之前继续二分
 
+// 二分查找最左侧，第一个大于等于给定值的元素索引
 Array.prototype.dichotomiaLeft = function(target) {
   let left = 0;
   let right = this.length - 1;
@@ -38,45 +39,43 @@ Array.prototype.dichotomiaLeft = function(target) {
   return left;
 };
 
-// console.log(arr1.dichotomiaLeft(5));
-
 // 局部最小值问题
 // arr无序，任何相邻的两个数不相等，求一个局部最小值的索引
 // 要求：时间复杂度好于O(N)
 
-const readline = require('readline');
+// const readline = require('readline');
 
-const r1 = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// const r1 = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout
+// });
 
-let target = -1
-let N = -1
-let nums = []
+// let target = -1
+// let N = -1
+// let nums = []
 
-r1.on('line', (line) => {
-  if (N < 0) {
-    [N, target] = line.trim().split(" ").map(i => parseInt(i))
-  } else {
-    nums = line.trim().split(" ").map(i => parseInt(i))
+// r1.on('line', (line) => {
+//   if (N < 0) {
+//     [N, target] = line.trim().split(" ").map(i => parseInt(i))
+//   } else {
+//     nums = line.trim().split(" ").map(i => parseInt(i))
 
-    let left = 0;
-    let right = N - 1;
-    let middle = Math.floor(left + ((right - left) >> 1));
-    while (left <= right) {
-      if (nums[middle] < target) {
-        left = middle + 1;
-      } else if (nums[middle] > target) {
-        right = middle - 1;
-      } else {
-        while (nums[--middle] === target) {}
-        return console.log(middle + 1);
-      }
-      middle = Math.floor(left + ((right - left) >> 1));
-    }
-    console.log(-1);
-  }
+//     let left = 0;
+//     let right = N - 1;
+//     let middle = Math.floor(left + ((right - left) >> 1));
+//     while (left <= right) {
+//       if (nums[middle] < target) {
+//         left = middle + 1;
+//       } else if (nums[middle] > target) {
+//         right = middle - 1;
+//       } else {
+//         while (nums[--middle] === target) {}
+//         return console.log(middle + 1);
+//       }
+//       middle = Math.floor(left + ((right - left) >> 1));
+//     }
+//     console.log(-1);
+//   }
 
 
-})
+// })

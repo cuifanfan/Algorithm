@@ -3,7 +3,9 @@ function swap(arr, a, b) {
 }
 
 function quick_sort(arr, left, right) {
-  if (left >= right) return
+  left = left || 0
+  right = right || arr.length - 1
+  if (!arr || left >= right || arr.length < 2) return
 
   // 在[left, right]上随机选取一个枢纽，与right交换。
   swap(arr, left + Math.floor(Math.random() * (right - left + 1)), right)
