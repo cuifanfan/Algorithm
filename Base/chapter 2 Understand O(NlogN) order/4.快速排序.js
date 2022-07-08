@@ -35,6 +35,7 @@ function quick_sort(arr, left, right) {
     if (i < j) {
       swap(arr, i, j)
     } else {
+      swap(arr, i, right - 1)
       quick_sort(arr, left, j)
       quick_sort(arr, i, right)
     }
