@@ -25,7 +25,7 @@ var findNumberIn2DArray = function(matrix, target) {
 
 空间复杂度O(1)，时间复杂度O(m+n)
 
-## [字符串排序](https://www.nowcoder.com/study/live/716/2/15)
+## [牛客：字符串排序](https://www.nowcoder.com/study/live/716/2/15)
 
 堆排序的应用，代码如下：
 
@@ -148,7 +148,7 @@ for (let k = 0; k < strArr.length; k++) {
 console.log(strArr.join(""))
 ```
 
-## [最短排序](https://www.nowcoder.com/study/live/716/2/16)
+## [牛客：最短排序](https://www.nowcoder.com/study/live/716/2/16)
 
 最小堆化数组的时候寻找最大的元素索引变化差。从当前index位置堆化到正确位置的索引差部分一定要发生交换，具体代码如下：
 
@@ -320,7 +320,7 @@ var insert = function(intervals, newInterval) {
 };
 ```
 
-## [最大点集](https://www.nowcoder.com/questionTerminal/089dbc5ec7ac468589ce143d43248949)
+## [牛客：最大点集](https://www.nowcoder.com/questionTerminal/089dbc5ec7ac468589ce143d43248949)
 
 根据X从小到大排序。然后遍历数组，当前项的y如果大于所有已经遍历项的最大y。则说明该项不满足存在x,y都比该项大的点。
 
@@ -417,6 +417,359 @@ var isPalindrome = function(head) {
     right = right.next
   }
   return true
+};
+```
+
+# Day04
+
+## [面试题 02.07. 链表相交](https://leetcode.cn/problems/intersection-of-two-linked-lists-lcci/)
+
+练习快慢指针。
+
+```js
+var getIntersectionNode = function(pHead1, pHead2) {
+  if (!pHead1 || !pHead2) return null
+
+  let n = 0
+  let curr1 = pHead1
+  let curr2 = pHead2
+  while (curr1.next) {
+    n++
+    curr1 = curr1.next
+  }
+
+  while (curr2.next) {
+    n--
+    curr2 = curr2.next
+  }
+
+  // 重定向两个指针，curr1指向长链表，curr2指向短链表
+  curr1 = n > 0 ? pHead1 : pHead2
+  curr2 = curr1 === pHead1 ? pHead2 : pHead1
+  n = Math.abs(n)
+
+  // 快指针先走n步
+  while (n-- !== 0) curr1 = curr1.next
+
+  while (curr1 !== curr2) {
+    curr1 = curr1.next
+    curr2 = curr2.next
+  }
+
+  return curr1
+};
+```
+
+## [剑指 Offer II 022. 链表中环的入口节点](https://leetcode.cn/problems/c32eOV/)
+
+借助hashmap，时间复杂度O(N)，空间复杂度O(N)
+
+```js
+var detectCycle = function(head) {
+  // 借助hash表
+  let set = new Set()
+  while (head && !set.has(head)) {
+    set.add(head)
+    head = head.next
+  }
+  return head
+};
+```
+
+面试的时候，想办法缩小空间，使用快慢指针：
+
+快指针和满指针在环内相遇时，快指针归位head，然后和慢指针以同样的速度向前，必在入口节点相遇。证明过程见leetcode
+
+```js
+var detectCycle = function(head) {
+  if (!head || !head.next || !head.next.next) return null
+  
+  // write code here
+  let fast = head.next.next
+  let slow = head.next
+  
+  while (fast !== slow) {
+    if (!fast || !fast.next) return null
+    fast = fast.next.next
+    slow = slow.next
+  } 
+  
+  // 有环且环内相遇
+  fast = head
+  while (fast !== slow) {
+    fast = fast.next
+    slow = slow.next
+  }
+  
+  return fast
+};
+```
+
+## [牛客：有环单链表判相交](https://www.nowcoder.com/study/live/716/4/14)
+
+```js
+function getLoopNode(head) {
+  // 无环
+  if (!head || !head.next || !head.next.next) return null
+
+  let fast = head.next.next
+  let slow = head.next
+
+  while (fast !== slow) {
+    // 无环
+    if (!fast || !fast.next) return null
+
+    fast = fast.next.next
+    slow = slow.next
+  }
+
+  // 环内相遇
+  fast = head
+  while (fast !== slow) {
+    fast = fast.next
+    slow = slow.next
+  }
+
+  return fast
+}
+
+function noLoop(head1, head2) {
+  // 快慢指针
+  let curr1 = head1
+  let curr2 = head2
+
+  // 链表长度差
+  let n = 0
+  while (curr1.next) {
+    curr1 = curr1.next
+    n++
+  }
+
+  while (curr2.next) {
+    curr2 = curr2.next
+    n--
+  }
+
+  // curr1指向长链表， curr2指向短链表
+  curr1 = n > 0 ? head1 : head2
+  curr2 = curr1 === head1 ? head2 : head1
+
+  n = Math.abs(n)
+
+  while (n-- !== 0) curr1 = curr1.next
+
+  while (curr1 !== curr2) {
+    curr1 = curr1.next
+    curr2 = curr2.next
+  }
+
+  return curr1
+}
+
+function bothLoop(loop1, loop2) {
+  let curr = loop1.next
+  while (curr !== loop1) {
+    if (curr === loop2) return loop2
+    curr = curr.next
+  }
+  return null
+}
+
+function getIntersectNode(head1, head2) {
+  if (!head1 || !head2) return null
+  let loop1 = getLoopNode(head1)
+  let loop2 = getLoopNode(head2)
+
+  // 两个都没有环
+  if (!loop1 && !loop2) return noLoop(head1, head2)
+  // 一个有环，一个没有 => 这种情况没有交点
+  // 两个都有环
+  if (loop1 && loop2) return bothLoop(loop1, loop2)
+  return null
+}
+```
+
+## [牛客：单链表的插入排序](https://www.nowcoder.com/study/live/716/4/15)
+
+```js
+function insertionSortList(head) {
+  if (!head || !head.next) return head
+
+  let pHead = new ListNode(-1)
+  pHead.next = head
+  head = head.next
+  pHead.next.next = null
+
+  while (head !== null) {
+    let prev = pHead
+    let curr = prev.next
+    while (curr !== null && curr.val <= head.val) {
+      prev = curr
+      curr = curr.next
+    }
+
+    // curr为null 或者 curr.val > head.val
+    prev.next = head
+    let next = head.next
+    head.next = curr
+
+    head = next
+
+  }
+  return pHead.next
+}
+```
+
+## [牛客：链表中环的入口节点](https://www.nowcoder.com/study/live/716/4/17)
+
+```js
+function detectCycle(head) {
+ if (!head || !head.next || !head.next.next) return null
+  
+  // write code here
+  let fast = head.next.next
+  let slow = head.next
+  
+  while (fast !== slow) {
+    if (!fast || !fast.next) return null
+    fast = fast.next.next
+    slow = slow.next
+  } 
+  
+  // 有环且环内相遇
+  fast = head
+  while (fast !== slow) {
+    fast = fast.next
+    slow = slow.next
+  }
+  
+  return fast
+}
+```
+
+## [144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/)
+
+迭代解法：
+
+```js
+var preorderTraversal = function(root) {
+  if (!root) return []
+  let ans = []
+  let stack = [root]
+  while (stack.length !== 0) {
+    let node = stack.pop()
+    ans.push(node.val)
+    if (node.right) stack.push(node.right)
+    if (node.left) stack.push(node.left)
+  }
+  return ans
+};
+```
+
+递归：
+
+```js
+var preorderTraversal = function(root) {
+  let ans = []
+  preOrderRecur(root, (node)=>{
+    ans.push(node.val)
+  })
+  return ans
+};
+
+function preOrderRecur(node, handler) {
+  if (node === null) return 
+  handler(node)
+  preOrderRecur(node.left, handler)
+  preOrderRecur(node.right, handler)
+}
+```
+
+## [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
+
+迭代解法：
+
+```js
+function leftInStack(node, stack) {
+  while (node) {
+    stack.push(node)
+    node = node.left
+  }
+}
+
+var inorderTraversal = function(root) {
+  if (!root) return []
+  const ans = []
+  const stack = []
+
+  // 把当前节点的左子树全部入栈
+  leftInStack(root, stack)
+  while (stack.length !== 0) {
+    let node = stack.pop()
+    ans.push(node.val)
+    if (node.right) {
+      // 如果有右结点，右结点的左子树全部入栈
+      leftInStack(node.right, stack)
+    }
+  }
+  return ans
+};
+```
+
+递归解法：
+
+```js
+var inorderTraversal = function(root) {
+  const ans = []
+  inOrderRecur(root, (node) => {
+    ans.push(node.val)
+  })
+  return ans
+};
+
+function inOrderRecur(node, handler) {
+  if (node === null) return 
+  inOrderRecur(node.left, handler)
+  handler(node)
+  inOrderRecur(node.right, handler)
+}
+```
+
+## [145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/)
+
+递归解法：
+
+```js
+var postorderTraversal = function(root) {
+  const ans = []
+  postOrderRecur(root, (node) => {
+    ans.push(node.val)
+  })
+  return ans
+};
+
+function postOrderRecur(node, handler) {
+  if (node === null) return 
+  postOrderRecur(node.left, handler)
+  postOrderRecur(node.right, handler)
+  handler(node)
+}
+```
+
+迭代解法：
+
+```js
+var postorderTraversal = function(root) {
+  if (!root) return []
+  const stack = [root]
+  const ans = []
+  while (stack.length !== 0) {
+    const node = stack.pop()
+    ans.push(node.val)
+    if (node.left) stack.push(node.left)
+    if (node.right) stack.push(node.right)
+  }
+  return ans.reverse()
 };
 ```
 
