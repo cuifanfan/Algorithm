@@ -1002,3 +1002,40 @@ module.exports = {
 ```
 
 ## [TODO: 662. 二叉树最大宽度](https://leetcode.cn/problems/maximum-width-of-binary-tree/)
+
+## [剑指 Offer II 052. 展平二叉搜索树](https://leetcode.cn/problems/NYBBNL/)
+
+水题，中序遍历：时间复杂度O(N)，空间复杂度O(N)
+
+```js
+var increasingBST = function(root) {
+  // 中序遍历
+  if (!root) return null
+  const stack = []
+  let head = new TreeNode(0)
+  let prev = head
+  while (root) {
+    stack.push(root)
+    root = root.left
+  }
+
+  while (stack.length !== 0) {
+    let node = stack.pop()
+
+    if (node.right) {
+      let curr = node.right
+      while (curr) {
+        stack.push(curr)
+        curr = curr.left
+      }
+    }
+
+    prev.right = node
+    node.left = null
+    prev = node
+  }
+  
+  return head.right
+};
+```
+

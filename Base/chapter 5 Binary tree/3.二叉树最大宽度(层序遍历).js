@@ -134,6 +134,7 @@ function getMaxWidth(root) {
   }
   return maxWidth
 }
+
 module.exports = {
   getMaxWidth: getMaxWidth
 };
