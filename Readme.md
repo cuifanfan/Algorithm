@@ -690,26 +690,19 @@ function preOrderRecur(node, handler) {
 迭代解法：
 
 ```js
-function leftInStack(node, stack) {
-  while (node) {
-    stack.push(node)
-    node = node.left
-  }
-}
-
 var inorderTraversal = function(root) {
-  if (!root) return []
+  if (!root) return [] 
   const ans = []
   const stack = []
-
-  // 把当前节点的左子树全部入栈
-  leftInStack(root, stack)
-  while (stack.length !== 0) {
-    let node = stack.pop()
-    ans.push(node.val)
-    if (node.right) {
-      // 如果有右结点，右结点的左子树全部入栈
-      leftInStack(node.right, stack)
+  while (root !== null || stack.length !== 0) {
+    if (root !== null) {
+      // 把当前节点的左子树全部加入栈
+      stack.push(root)
+      root = root.left
+    } else {
+      root = stack.pop()
+      ans.push(root.val)
+      root = root.right
     }
   }
   return ans
@@ -773,3 +766,239 @@ var postorderTraversal = function(root) {
 };
 ```
 
+# Day05
+
+## [102. 二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/)
+
+亮点是使用size记录每层元素的个数。时间复杂度O(N)，空间复杂度O(1)
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+
+class Node {
+  constructor(val) {
+    this.val = val
+    this.left = null
+    this.right = null
+  }
+} 
+
+class MyQueue {
+  constructor() {
+    this.head = null
+    this.tail = null
+    this.count = 0
+  }
+
+  get() {
+    if (this.head === null) return null
+    let tempNode = this.head
+    this.head = tempNode.left
+    tempNode.left = null
+    if (this.head) this.head.right = null
+    this.count--
+    return tempNode.val
+  }
+
+  put(val) {
+    let node = new Node(val)
+    if (this.head === null) {
+      this.head = this.tail = node
+    } else {
+      this.tail.left = node
+      node.right = this.tail
+      this.tail = node
+    }
+    this.count++
+  }
+    
+  size() {
+    return this.count
+  }
+
+  isEmpty() {
+    return this.head === null
+  }
+}
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+var levelOrder = function(root) {
+  if (!root) return []
+  const ans = []
+  const queue = new MyQueue()
+  ans.push([root.val])
+  queue.put(root)
+
+  while (!queue.isEmpty()) {
+    // 当前层元素的个数
+    let size = queue.size()
+
+    const children = []
+
+    while (size > 0) {
+      const node = queue.get()
+      size--
+      if (node.left) {
+        children.push(node.left.val)
+        queue.put(node.left)
+      }
+      if (node.right) {
+        children.push(node.right.val)
+        queue.put(node.right)
+      }
+    }
+    
+    if (children.length > 0) ans.push(children)
+  }
+  return ans
+};
+```
+
+## [牛客：二叉树的最大宽度](https://www.nowcoder.com/study/live/716/5/6)
+
+哈希表解法：时间复杂度O(N)，空间复杂度O(N)
+
+```js
+class Node {
+  constructor(val) {
+    this.val = val
+    this.left = null
+    this.right = null
+  }
+}
+
+class MyQueue {
+  constructor() {
+    this.head = null
+    this.tail = null
+    this.count = 0
+  }
+
+  get() {
+    if (this.head === null) return null
+    let tempNode = this.head
+    this.head = tempNode.left
+    tempNode.left = null
+    if (this.head) this.head.right = null
+    this.count--
+    return tempNode.val
+  }
+
+  add(val) {
+    let node = new Node(val)
+    if (this.head === null) {
+      this.head = this.tail = node
+    } else {
+      this.tail.left = node
+      node.right = this.tail
+      this.tail = node
+    }
+    this.count++
+  }
+
+  size() {
+    return this.count
+  }
+
+  isEmpty() {
+    return this.head === null
+  }
+}
+
+function getMaxWidth( root ) {
+  if (root == null) return 0
+  const queue = new MyQueue()
+  // 当前结点和所在层数的映射
+  const map = new Map()
+  let currLevel = 0
+  let maxWidth = 0
+  let currWidth = 0
+
+  queue.add(root)
+  map.set(root, ++currLevel)
+  maxWidth = 1
+
+  while (!queue.isEmpty()) {
+    const node = queue.get()
+    const level = map.get(node)
+    if (level > currLevel) {
+      // 到达下一层
+      maxWidth = Math.max(maxWidth, currWidth)
+      currWidth = 1
+      currLevel = level
+    } else {
+      // 仍在当前层
+      currWidth++
+    }
+    
+    if (node.left) {
+      queue.add(node.left)
+      map.set(node.left, level+1)
+    }
+    if (node.right) {
+      queue.add(node.right)
+      map.set(node.right, level+1)
+    }
+  }
+  maxWidth = Math.max(maxWidth, currWidth)
+  return maxWidth
+}
+module.exports = {
+    getMaxWidth : getMaxWidth
+};
+```
+
+空间复杂度O(1)解法：
+
+```js
+function getMaxWidth(root) {
+  if (!root) return 0
+  const queue = new MyQueue()
+  // 当前行最后一个结点
+  let currend = root
+  // 标识下一行的结点，当前行遍历结束时，所有当前行的元素加入队列，此时指向下一行最后一个结点
+  let nextend = null
+  // 当前行宽度
+  let currWidth = 0
+  let maxWidth = 0
+
+  queue.add(root)
+  while (!queue.isEmpty()) {
+    const node = queue.get()
+    currWidth++
+    
+    if (node.left) {
+      queue.add(node.left)
+      nextend = node.left
+    }
+    if (node.right) {
+      queue.add(node.right)
+      nextend = node.right
+    }
+     
+    if (node === currend) {
+      maxWidth = Math.max(maxWidth, currWidth)
+      currWidth = 0
+      currend = nextend
+      nextend = null
+    }
+    
+  }
+  return maxWidth
+}
+
+module.exports = {
+  getMaxWidth: getMaxWidth
+};
+```
+
+## [TODO: 662. 二叉树最大宽度](https://leetcode.cn/problems/maximum-width-of-binary-tree/)
