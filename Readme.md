@@ -1039,3 +1039,175 @@ var increasingBST = function(root) {
 };
 ```
 
+# Day06
+
+## [98. 验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/)
+
+```js
+function checkBst(head, data) {
+  if (!head) return true
+
+  // 左树不是二叉树
+  if (!checkBst(head.left, data)) {
+    return false
+  }
+  
+  if (data.val >= head.val) {
+    return false
+  } else {
+    data.val = head.val
+  }
+
+  return checkBst(head.right, data)
+}
+
+var isValidBST = function(root) {
+  return checkBst(root, {
+    val:-Infinity
+  })
+};
+```
+
+这题很有记录意义，平时只顾做题也忘记有这种问题存在了，就是按值和按引用传递。如果是按值传递的话，里层递归修改的数据，在外层是访问不到的。前几天还写JavaScript调用栈的文章呢。怎么到了刷题就忘记了😂。
+
+非递归解法，中序遍历：
+
+```js
+var isValidBST = function(root) {
+  // 中序遍历
+  let preValue = -Infinity
+  const stack = []
+  // 左孩子全部入栈
+  let curr = root
+  while (curr) {
+    stack.push(curr)
+    curr = curr.left
+  }
+
+  while (stack.length !== 0) {
+    const node = stack.pop()
+
+    if (preValue >= node.val) return false
+    else preValue = node.val
+
+    if (node.right) {
+      // 把当前结点连同所有左孩子入栈
+      curr = node.right
+      while (curr) {
+        stack.push(curr)
+        curr = curr.left
+      }
+    }
+  }
+  return true
+};
+```
+
+## [958. 二叉树的完全性检验](https://leetcode.cn/problems/check-completeness-of-a-binary-tree/)
+
+宽度优先遍历每个节点。
+
+- 当前节点右孩子存在而左孩子不存在，不是完全二叉树。
+- 当前节点有孩子不存在，则当前节点以后的所有结点都是叶子节点。
+
+```js
+class Node {
+  constructor(val) {
+    this.val = val
+    this.left = null
+    this.right = null
+  }
+}
+
+class MyQueue {
+  constructor() {
+    this.head = null
+    this.tail = null
+    this.count = 0
+  }
+
+  get() {
+    if (this.head === null) return null
+    let tempNode = this.head
+    this.head = tempNode.left
+    tempNode.left = null
+    if (this.head) this.head.right = null
+    this.count--
+    return tempNode.val
+  }
+
+  add(val) {
+    let node = new Node(val)
+    if (this.head === null) {
+      this.head = this.tail = node
+    } else {
+      this.tail.left = node
+      node.right = this.tail
+      this.tail = node
+    }
+    this.count++
+  }
+
+  size() {
+    return this.count
+  }
+
+  isEmpty() {
+    return this.head === null
+  }
+}
+
+function checkCbt(root) {
+  if (!root) return true
+  // 对整个树进行层序遍历
+  const stack = [root]
+  const queue = new MyQueue()
+  queue.add(root)
+
+  // 剩余结点是否全为叶子结点
+  let flag = false
+  while (!queue.isEmpty()) {
+    const node = queue.get()
+    // 如果出现了有右孩子而无左孩子的情况，直接返回false
+    // 如果已经确认某节点之后全是叶子结点，但之后的结点却有子节点，直接返回false
+    if ((node.right && !node.left) || (flag && (node.left || node.right))) return false
+
+    // 如果某个结点出现了右孩子为空，则标识从该节点的下个结点开始，一定都是叶子节点
+    if (!flag && !node.right) flag = true
+
+    // 有两个子结点或者为叶子结点或者只有左节点
+    if (node.left) queue.add(node.left)
+    if (node.right) queue.add(node.right)
+  }
+  return true
+}
+
+var isCompleteTree = function(root) {
+  return checkCbt(root)
+};
+```
+
+## [110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)
+
+```js
+function ReturnType(isBT, height) {
+  this.isBT = isBT
+  this.height = height
+}
+
+function checkBalancedTree(root) {
+  if (!root) return new ReturnType(true, 0)
+
+  const leftReturn = checkBalancedTree(root.left)
+  const rightReturn = checkBalancedTree(root.right)
+
+  const isBT = leftReturn.isBT && rightReturn.isBT && Math.abs(leftReturn.height - rightReturn.height) < 2
+  const height = Math.max(leftReturn.height, rightReturn.height) + 1
+  return new ReturnType(isBT, height)
+} 
+
+var isBalanced = function(root) {
+  return checkBalancedTree(root).isBT
+};
+```
+
